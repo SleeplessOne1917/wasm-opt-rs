@@ -330,7 +330,7 @@ fn parse_command_args(command: Command) -> Result<ParsedCliArgs, Error> {
 }
 
 fn is_pass_argument(arg: &str, pass: &Pass) -> bool {
-    let pass_name = pass.name();
+    let pass_name: &str = pass.into();
     arg.starts_with("--") && arg.contains(pass_name) && arg.len() == 2 + pass_name.len()
 }
 

@@ -3,7 +3,7 @@ use wocxx::cxx::let_cxx_string;
 use wocxx::{colors, cxx, wasm};
 
 use std::path::Path;
-use strum_macros::EnumIter;
+use strum::EnumIter;
 
 #[cfg(unix)]
 use std::os::unix::ffi::OsStrExt;

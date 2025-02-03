@@ -186,7 +186,7 @@ impl OptimizationOptions {
         self.passes
             .more_passes
             .iter()
-            .for_each(|pass| pass_runner.add(pass.name()));
+            .for_each(|pass| pass_runner.add(pass.into()));
 
         pass_runner.run();
     }
@@ -262,7 +262,7 @@ impl OptimizationOptions {
 fn will_remove_debug_info(passes: &[Pass]) -> bool {
     passes
         .iter()
-        .any(|pass| PassRunner::pass_removes_debug_info(pass.name()) == true)
+        .any(|pass| PassRunner::pass_removes_debug_info(pass.into()) == true)
 }
 
 fn convert_feature_sets(features: &Features) -> (BaseFeatureSet, BaseFeatureSet) {

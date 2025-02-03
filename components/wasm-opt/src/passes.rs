@@ -1,5 +1,5 @@
 use crate::base::pass_registry;
-use strum_macros::EnumIter;
+use strum::{Display, EnumIter, EnumString, IntoStaticStr};
 
 /// A Binaryen optimization pass.
 ///
@@ -7,7 +7,8 @@ use strum_macros::EnumIter;
 /// `wasm-opt`, but with Rust capitalization conventions.
 // Keep these in the same order as PassRegistry::registerPasses
 #[non_exhaustive]
-#[derive(Clone, Debug, EnumIter)]
+#[derive(Clone, Debug, EnumIter, EnumString, IntoStaticStr, Display)]
+#[strum(serialize_all = "kebab-case")]
 pub enum Pass {
     /// Lower unaligned loads and stores to smaller aligned ones.
     AlignmentLowering,
@@ -288,155 +289,9 @@ pub enum Pass {
 }
 
 impl Pass {
-    /// Returns the name of the pass.
-    ///
-    /// This is the same name used by Binaryen to identify the pass on the command line.
-    pub fn name(&self) -> &'static str {
-        use Pass::*;
-        match self {
-            AlignmentLowering => "alignment-lowering",
-            Asyncify => "asyncify",
-            AvoidReinterprets => "avoid-reinterprets",
-            Dae => "dae",
-            DaeOptimizing => "dae-optimizing",
-            AbstractTypeRefining => "abstract-type-refining",
-            CoalesceLocals => "coalesce-locals",
-            CoalesceLocalsLearning => "coalesce-locals-learning",
-            CodePushing => "code-pushing",
-            CodeFolding => "code-folding",
-            ConstHoisting => "const-hoisting",
-            Cfp => "cfp",
-            Dce => "dce",
-            Dealign => "dealign",
-            DeNan => "denan",
-            DiscardGlobalEffects => "discard-global-effects",
-            Directize => "directize",
-            Dfo => "dfo",
-            DwarfDump => "dwarfdump",
-            DuplicateImportElimination => "duplicate-import-elimination",
-            DuplicateFunctionElimination => "duplicate-function-elimination",
-            EmitTargetFeatures => "emit-target-features",
-            ExtractFunction => "extract-function",
-            ExtractFunctionIndex => "extract-function-index",
-            Flatten => "flatten",
-            FpCastEmu => "fpcast-emu",
-            FuncMetrics => "func-metrics",
-            GenerateDyncalls => "generate-dyncalls",
-            GenerateI64Dyncalls => "generate-i64-dyncalls",
-            GenerateGlobalEffects => "generate-global-effects",
-            GenerateStackIr => "generate-stack-ir",
-            GlobalRefining => "global-refining",
-            Gto => "gto",
-            Gsi => "gsi",
-            Gufa => "gufa",
-            GufaCastAll => "gufa-cast-all",
-            GufaOptimizing => "gufa-optimizing",
-            TypeRefining => "type-refining",
-            Heap2Local => "heap2local",
-            InlineMain => "inline-main",
-            Inlining => "inlining",
-            InliningOptimizing => "inlining-optimizing",
-            IntrinsicLowering => "intrinsic-lowering",
-            Jspi => "jspi",
-            LegalizeJsInterface => "legalize-js-interface",
-            LegalizeJsInterfaceMinimally => "legalize-js-interface-minimally",
-            LocalCse => "local-cse",
-            LocalSubtyping => "local-subtyping",
-            LogExecution => "log-execution",
-            I64ToI32Lowering => "i64-to-i32-lowering",
-            InstrumentLocals => "instrument-locals",
-            InstrumentMemory => "instrument-memory",
-            Licm => "licm",
-            LimitSegments => "limit-segments",
-            Memory64Lowering => "memory64-lowering",
-            MemoryPacking => "memory-packing",
-            MergeBlocks => "merge-blocks",
-            MergeSimilarFunctions => "merge-similar-functions",
-            MergeLocals => "merge-locals",
-            Metrics => "metrics",
-            MinifyImports => "minify-imports",
-            MinifyImportsAndExports => "minify-imports-and-exports",
-            MinifyImportsAndExportsAndModules => "minify-imports-and-exports-and-modules",
-            ModAsyncifyAlwaysAndOnlyUnwind => "mod-asyncify-always-and-only-unwind",
-            ModAsyncifyNeverUnwind => "mod-asyncify-never-unwind",
-            Monomorphize => "monomorphize",
-            MonomorphizeAlways => "monomorphize-always",
-            MultiMemoryLowering => "multi-memory-lowering",
-            MultiMemoryLoweringWithBoundsChecks => "multi-memory-lowering-with-bounds-checks",
-            Nm => "nm",
-            NameTypes => "name-types",
-            OnceReduction => "once-reduction",
-            OptimizeAddedConstants => "optimize-added-constants",
-            OptimizeAddedConstantsPropagate => "optimize-added-constants-propagate",
-            OptimizeCasts => "optimize-casts",
-            OptimizeInstructions => "optimize-instructions",
-            OptimizeStackIr => "optimize-stack-ir",
-            PickLoadSigns => "pick-load-signs",
-            Poppify => "poppify",
-            PostEmscripten => "post-emscripten",
-            OptimizeForJs => "optimize-for-js",
-            Precompute => "precompute",
-            PrecomputePropagate => "precompute-propagate",
-            Print => "print",
-            PrintMinified => "print-minified",
-            PrintFeatures => "print-features",
-            PrintFull => "print-full",
-            PrintCallGraph => "print-call-graph",
-            PrintFunctionMap => "print-function-map",
-            Symbolmap => "symbolmap",
-            PrintStackIr => "print-stack-ir",
-            RemoveNonJsOps => "remove-non-js-ops",
-            RemoveImports => "remove-imports",
-            RemoveMemory => "remove-memory",
-            RemoveUnusedBrs => "remove-unused-brs",
-            RemoveUnusedModuleElements => "remove-unused-module-elements",
-            RemoveUnusedNonfunctionModuleElements => "remove-unused-nonfunction-module-elements",
-            RemoveUnusedNames => "remove-unused-names",
-            RemoveUnusedTypes => "remove-unused-types",
-            ReorderFunctionsByName => "reorder-functions-by-name",
-            ReorderFunctions => "reorder-functions",
-            ReorderGlobals => "reorder-globals",
-            RecorderLocals => "reorder-locals",
-            Rereloop => "rereloop",
-            Rse => "rse",
-            Roundtrip => "roundtrip",
-            SafeHeap => "safe-heap",
-            SetGlobals => "set-globals",
-            SignaturePruning => "signature-pruning",
-            SignatureRefining => "signature-refining",
-            SignextLowering => "signext-lowering",
-            SimplifyGlobals => "simplify-globals",
-            SimplifyGlobalsOptimizing => "simplify-globals-optimizing",
-            SimplifyLocals => "simplify-locals",
-            SimplifyLocalsNonesting => "simplify-locals-nonesting",
-            SimplifyLocalsNotee => "simplify-locals-notee",
-            SimplifyLocalsNostructure => "simplify-locals-nostructure",
-            SimplifyLocalsNoteeNostructure => "simplify-locals-notee-nostructure",
-            Souperify => "souperify",
-            SouperifySingleUse => "souperify-single-use",
-            SpillPointers => "spill-pointers",
-            StubUnsupportedJs => "stub-unsupported-js",
-            Ssa => "ssa",
-            SsaNomerge => "ssa-nomerge",
-            Strip => "strip",
-            StackCheck => "stack-check",
-            StripDebug => "strip-debug",
-            StripDwarf => "strip-dwarf",
-            StripProducers => "strip-producers",
-            StripEh => "strip-eh",
-            StripTargetFeatuers => "strip-target-features",
-            TrapModeClamp => "trap-mode-clamp",
-            TrapModeJs => "trap-mode-js",
-            TypeMerging => "type-merging",
-            TypeSsa => "type-ssa",
-            Untee => "untee",
-            Vacuum => "vacuum",
-        }
-    }
-
     /// Get Binaryen's description of the pass.
     pub fn description(&self) -> String {
         // NB: This will abort if the name is invalid
-        pass_registry::get_pass_description(self.name())
+        pass_registry::get_pass_description(self.into())
     }
 }
