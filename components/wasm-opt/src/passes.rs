@@ -34,12 +34,16 @@ pub enum Pass {
     ConstHoisting,
     /// Propagate constant struct field values.
     Cfp,
+    /// Propagate constant struct field values, using ref.test.
+    CfpReftest,
     /// Removes unreachable code.
     Dce,
     /// Forces all loads and stores to have alignment 1.
     Dealign,
+    /// Propagate debug location from parents or previous siblings to child nodes.
+    PropagateDebugLocs,
     /// Instrument the wasm to convert NaNs into 0 at runtime.
-    DeNan,
+    Denan,
     /// Turns indirect calls into direct ones.
     Directize,
     /// Discards global effect info.
@@ -47,13 +51,15 @@ pub enum Pass {
     /// Optimizes using the DataFlow SSA IR.
     Dfo,
     /// Dump DWARF debug info sections from the read binary.
-    DwarfDump,
+    Dwarfdump,
     /// Removes duplicate imports.
     DuplicateImportElimination,
     /// Removes duplicate functions.
     DuplicateFunctionElimination,
     /// Emit the target features section in the output.
     EmitTargetFeatures,
+    /// Modify the wasm (destructively) for closed-world.
+    EncloseWorld,
     /// Leaves just one function (useful for debugging).
     ExtractFunction,
     /// Leaves just one function selected by index.
@@ -61,7 +67,7 @@ pub enum Pass {
     /// Flattens out code, removing nesting.
     Flatten,
     /// Emulates function pointer casts, allowing incorrect indirect calls to (sometimes) work.
-    FpCastEmu,
+    FpcastEmu,
     /// Reports function metrics.
     FuncMetrics,
     /// Generate dynCall fuctions used by emscripten ABI.
@@ -70,14 +76,12 @@ pub enum Pass {
     GenerateI64Dyncalls,
     /// Generate global effect info (helps later passes).
     GenerateGlobalEffects,
-    /// Generate Stack IR.
-    GenerateStackIr,
     /// Refine the types of globals.
     GlobalRefining,
-    /// Globally optimize GC types.
-    Gto,
     /// Globally optimize struct values.
     Gsi,
+    /// Globally optimize GC types.
+    Gto,
     /// Grand unified flow analyses.
     ///
     /// Optimize the entire program using information about what content can actually appear in each location.
@@ -86,10 +90,16 @@ pub enum Pass {
     GufaCastAll,
     /// Gufa plus local optimizations in functions we modified.
     GufaOptimizing,
+    /// Optimizes J2CL specific constructs.
+    OptimizeJ2cl,
+    /// Merges itable structures into vtables to make types more compact.
+    MergeJ2clItables,
     /// Apply more specific subtypes to type fields where possible.
     TypeRefining,
     /// Replace GC allocations with locals.
     Heap2Local,
+    /// Optimize heap (GC) stores.
+    HeapStoreOptimization,
     /// Inline __original_main into main.
     InlineMain,
     /// Inline functions (you probably want inlining-optimizing).
@@ -102,8 +112,8 @@ pub enum Pass {
     Jspi,
     /// Legalizes i64 types on the import/export boundary.
     LegalizeJsInterface,
-    /// Legalizes i64 types on the import/export boundary in a minimal manner, only on things only JS will call.
-    LegalizeJsInterfaceMinimally,
+    /// Legalizes the import/export boundary and prunes when needed.
+    LegalizeAndPruneJsInterface,
     /// Common subexpression elimination inside basic blocks.
     LocalCse,
     /// Apply more specific subtypes to locals where possible.
@@ -112,6 +122,8 @@ pub enum Pass {
     LogExecution,
     /// Lower all uses of i64s to use i32s instead.
     I64ToI32Lowering,
+    /// Instrument the build with code to intercept specific function calls.
+    TraceCalls,
     /// Instrument the build with code to intercept all loads and stores.
     InstrumentLocals,
     /// Instrument the build with code to intercept all loads and stores.
@@ -122,6 +134,10 @@ pub enum Pass {
     LimitSegments,
     /// Lower loads and stores to a 64-bit memory to instead use a 32-bit one.
     Memory64Lowering,
+    /// Alias for memory64-lowering.
+    Table64Lowering,
+    /// Lower memory.copy and memory.fill to wasm mvp and disable the bulk-memory feature.
+    LlvmMemoryCopyFillLowering,
     /// Packs memory into separate segments, skipping zeros.
     MemoryPacking,
     /// Merges blocks to their parents.
@@ -138,6 +154,8 @@ pub enum Pass {
     MinifyImportsAndExports,
     /// Minifies both import and export names, and emits a mapping to the minified ones, and minifies the modules as well.
     MinifyImportsAndExportsAndModules,
+    /// Split types into minimal recursion groups.
+    MinimizeRecGroups,
     /// Apply the assumption that asyncify imports always unwind, and we never rewind.
     ModAsyncifyAlwaysAndOnlyUnwind,
     /// Apply the assumption that asyncify never unwinds.
@@ -154,6 +172,14 @@ pub enum Pass {
     Nm,
     /// (Re)name all heap types.
     NameTypes,
+    /// Mark functions as no-inline.
+    NoInline,
+    /// Mark functions as no-inline (for full inlining only).
+    NoFullInline,
+    /// Mark functions as no-inline (for partial inlining only).
+    NoPartialInline,
+    /// Lower nontrapping float-to-int operations to wasm mvp and disable the nontrapping fptoint feature.
+    LlvmNontrappingFptointLowering,
     /// Reduces calls to code that only runs once.
     OnceReduction,
     /// Optimizes added constants into load/store offsets.
@@ -164,8 +190,10 @@ pub enum Pass {
     OptimizeCasts,
     /// Optimizes instruction combinations.
     OptimizeInstructions,
-    /// Optimize Stack IR.
-    OptimizeStackIr,
+    /// Outline instructions.
+    /// TODO: This is gated behind conditional compilation in the CPP.
+    /// Need to figure out how to handle that on the rust end.
+    Outlining,
     /// Pick load signs based on their uses.
     PickLoadSigns,
     /// Tranform Binaryen IR into Poppy IR.
@@ -192,8 +220,8 @@ pub enum Pass {
     PrintFunctionMap,
     /// (Alias for print-function-map).
     Symbolmap,
-    /// Print out Stack IR (useful for internal debugging).
-    PrintStackIr,
+    /// Propagate global values to other globals (useful for tests).
+    PropagateGlobalsGlobally,
     /// Removes operations incompatible with js.
     RemoveNonJsOps,
     /// Removes imports and replaces them with nops.
@@ -216,8 +244,10 @@ pub enum Pass {
     ReorderFunctions,
     /// Sorts globals by access frequency.
     ReorderGlobals,
+    /// Sorts globals by access frequency (even if there are few).
+    ReorderGlobalsAlways,
     /// Sorts locals by access frequency.
-    RecorderLocals,
+    ReorderLocals,
     /// Re-optimize control flow using the relooper algorithm.
     Rereloop,
     /// Remove redundant local.sets.
@@ -228,6 +258,8 @@ pub enum Pass {
     SafeHeap,
     /// Sets specified globals to specified values.
     SetGlobals,
+    /// Write data segments to a file and strip them from the module.
+    SeparateDataSegments,
     /// Remove params from function signature types where possible.
     SignaturePruning,
     /// Apply more specific subtypes to signature types where possible.
@@ -260,6 +292,14 @@ pub enum Pass {
     Ssa,
     /// Ssa-ify variables so that they have a single assignment, ignoring merges.
     SsaNomerge,
+    /// Gathers wasm strings to globals.
+    StringGathering,
+    /// Lowers wasm strings and operations to imports.
+    StringLowering,
+    /// Same as string-lowering, but encodes well-formed strings as magic imports.
+    StringLoweringMagicImports,
+    /// Same as string-lowering-magic-imports, but raise a fatal error if there are invalid strings.
+    StringLoweringMagicImportsAssert,
     /// Deprecated; same as strip-debug.
     Strip,
     /// Enforce limits on llvm's __stack_pointer global.
@@ -273,19 +313,35 @@ pub enum Pass {
     /// Strip EH instructions.
     StripEh,
     /// Strip the wasm target features section.
-    StripTargetFeatuers,
+    StripTargetFeatures,
+    /// Deprecated; same as translate-to-exnref.
+    TranslateToNewEh,
+    /// Translate old Phase 3 EH instructions to new ones with exnref.
+    TranslateToExnref,
     /// Replace trapping operations with clamping semantics.
     TrapModeClamp,
     /// Replace trapping operations with js semantics.
     TrapModeJs,
+    /// Optimize trivial tuples away.
+    TupleOptimization,
+    /// Mark all leaf types as final.
+    TypeFinalizing,
     /// Merge types to their supertypes where possible.
     TypeMerging,
     /// Create new nominal types to help other optimizations.
     TypeSsa,
+    /// Mark all types as non-final (open).
+    TypeUnfinalizing,
+    /// Removes unnecessary subtyping relationships.
+    Unsubtyping,
     /// Removes local.tees, replacing them with sets and gets.
     Untee,
     /// Removes obviously unneeded code.
     Vacuum,
+    /// Fixup nested pops within catches.
+    CatchPopFixup,
+    /// Generalize types (not yet sound).
+    ExperimentalTypeGeneralizing
 }
 
 impl Pass {
