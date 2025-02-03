@@ -300,7 +300,7 @@ fn convert_feature_sets(features: &Features) -> (BaseFeatureSet, BaseFeatureSet)
 
 fn convert_feature(feature: &Feature) -> BaseFeature {
     match feature {
-        Feature::None => BaseFeature::None,
+        Feature::None | Feature::Mvp => BaseFeature::None,
         Feature::Atomics => BaseFeature::Atomics,
         Feature::MutableGlobals => BaseFeature::MutableGlobals,
         Feature::TruncSat => BaseFeature::TruncSat,
@@ -317,7 +317,11 @@ fn convert_feature(feature: &Feature) -> BaseFeature {
         Feature::ExtendedConst => BaseFeature::ExtendedConst,
         Feature::Strings => BaseFeature::Strings,
         Feature::MultiMemory => BaseFeature::MultiMemory,
-        Feature::Mvp => BaseFeature::None,
+        Feature::TypedContinuations => BaseFeature::TypedContinuations,
+        Feature::SharedEverything => BaseFeature::SharedEverything,
+        Feature::Fp16 => BaseFeature::Fp16,
+        Feature::BulkMemoryOpt => BaseFeature::BulkMemoryOpt,
+        Feature::CallIndirectOverlong => BaseFeature::CallIndirectOverlong,
         Feature::Default => BaseFeature::Default,
         Feature::All => BaseFeature::All,
     }

@@ -324,13 +324,22 @@ pub enum Feature {
     ExtendedConst = 1 << 13,
     Strings = 1 << 14,
     MultiMemory = 1 << 15,
+    TypedContinuations = 1 << 16,
+    SharedEverything = 1 << 17,
+    Fp16 = 1 << 18,
+    // Just the memory.copy and fill operations
+    BulkMemoryOpt = 1 << 19,
+    // This features is a no-op for compatibility. Having it in this list means
+    // that we can automatically generate tool flags that set it, but otherwise
+    // it does nothing. Binaryen always accepts LEB call-indirect encodings.
+    CallIndirectOverlong = 1 << 20,
     // MVP has the same value as None.
     // Mvp = 0,
     Default = 1 << 5 | 1 << 1, // SignExt | MutableGlobals,
     // GCNNLocals are opt-in: merely asking for "All" does not apply them. To
     // get all possible values use AllPossible. See setAll() below for more
     // details.
-    All = (1 << 16) - 1,
+    All = (1 << 21) - 1,
 }
 
 pub struct PassRunner<'wasm>(cxx::UniquePtr<wasm::PassRunner<'wasm>>);

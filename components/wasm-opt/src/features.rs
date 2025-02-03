@@ -74,6 +74,11 @@ pub enum Feature {
     ///
     /// [Specification](https://github.com/WebAssembly/multi-memory/blob/master/proposals/multi-memory/Overview.md).
     MultiMemory,
+    TypedContinuations,
+    SharedEverything,
+    Fp16,
+    BulkMemoryOpt,
+    CallIndirectOverlong,
     /// The original WebAssembly specification.
     ///
     /// It has the same value as `None`.
