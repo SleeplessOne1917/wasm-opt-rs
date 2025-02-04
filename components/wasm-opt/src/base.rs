@@ -132,6 +132,8 @@ impl ModuleWriter {
 }
 
 pub mod pass_registry {
+    use std::ops::Deref;
+
     use wasm_opt_cxx_sys as wocxx;
     use wocxx::cxx::let_cxx_string;
     use wocxx::wasm;
@@ -155,6 +157,12 @@ pub mod pass_registry {
         let description = description.as_ref().expect("non-null");
 
         description.to_str().expect("utf8").to_string()
+    }
+
+    pub fn contains_pass(name: &str) -> bool {
+        let_cxx_string!(name = name);
+
+        wasm::containsPass(name.deref())
     }
 
     /// Aborts if `name` is invalid.
@@ -396,6 +404,7 @@ pub fn check_pass_options_defaults_os(pass_options: PassOptions) -> bool {
 }
 
 // FIXME binaryen unicode path handling is broken on windows
+// TODO: How do I fix this?
 fn convert_path_to_u8(path: &Path) -> Result<&[u8], cxx::Exception> {
     #[cfg(unix)]
     let path = path.as_os_str().as_bytes();

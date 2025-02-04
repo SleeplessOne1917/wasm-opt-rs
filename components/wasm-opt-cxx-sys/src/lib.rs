@@ -103,6 +103,8 @@ pub mod wasm {
 
         fn getPassDescription(name: Pin<&mut CxxString>) -> UniquePtr<CxxString>;
 
+        fn containsPass(name: &CxxString) -> bool;
+
         fn isPassHidden(name: Pin<&mut CxxString>) -> bool;
     }
 
@@ -146,6 +148,10 @@ pub mod wasm {
         fn setZeroFilledMemory(self: Pin<&mut Self>, zeroFilledMemory: bool);
 
         fn setDebugInfo(self: Pin<&mut Self>, debugInfo: bool);
+
+        fn setGenerateStackIR(self: Pin<&mut Self>, generateStackIR: bool);
+
+        fn setOptimizeStackIR(self: Pin<&mut Self>, optimizeStackIR: bool);
 
         fn setArguments(self: Pin<&mut Self>, key: Pin<&mut CxxString>, value: Pin<&mut CxxString>);
     }

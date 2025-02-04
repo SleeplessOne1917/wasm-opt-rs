@@ -118,6 +118,14 @@ namespace wasm_shims {
       inner.debugInfo = debugInfo;
     }
 
+    void setGenerateStackIR(bool generateStackIR) {
+      inner.generateStackIR = generateStackIR;
+    }
+
+    void setOptimizeStackIR(bool optimizeStackIR) {
+      inner.optimizeStackIR = optimizeStackIR;
+    }
+
     void setArguments(std::string& key, std::string& value) {
       inner.arguments[std::move(key)] = std::move(value);
     }
@@ -209,6 +217,11 @@ namespace wasm_shims {
   std::unique_ptr<std::string> getPassDescription(std::string& name) {
     auto r = wasm::PassRegistry::get();
     return std::make_unique<std::string>(r->getPassDescription(std::move(name)));
+  }
+
+  bool containsPass(const std::string& name) {
+    auto r = wasm::PassRegistry::get();
+    return r->containsPass(name);
   }
 
   bool isPassHidden(std::string& name) {
