@@ -1,6 +1,6 @@
 [package]
 name = "wasm-opt-sys"
-version = "0.116.0"
+version = "0.121.0"
 description = "Native wasm-opt build"
 license = "MIT / Apache-2.0"
 edition = "2018"
@@ -11,7 +11,7 @@ links = "binaryen"
 
 [build-dependencies]
 anyhow = "1.0.95"
-cc = { version = "1.2.11", features = ["parallel"] }
+cc = { version = "1.2.12", features = ["parallel"] }
 cxx-build = "1.0.137"
 
 [dependencies]
