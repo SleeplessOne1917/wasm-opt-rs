@@ -77,7 +77,7 @@ pub mod wasm {
     unsafe extern "C++" {
         type ModuleWriter;
 
-        fn newModuleWriter() -> UniquePtr<ModuleWriter>;
+        fn newModuleWriter(options: &PassOptions) -> UniquePtr<ModuleWriter>;
 
         fn setDebugInfo(self: Pin<&mut Self>, debug: bool);
 

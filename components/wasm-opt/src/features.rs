@@ -73,6 +73,7 @@ pub enum Feature {
     /// Multiple memory.
     ///
     /// [Specification](https://github.com/WebAssembly/multi-memory/blob/master/proposals/multi-memory/Overview.md).
+    #[strum(serialize = "multimemory")]
     MultiMemory,
     TypedContinuations,
     SharedEverything,

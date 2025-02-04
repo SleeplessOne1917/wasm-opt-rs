@@ -143,7 +143,7 @@ impl OptimizationOptions {
         }
 
         {
-            let mut writer = ModuleWriter::new();
+            let mut writer = ModuleWriter::new(&self.translate_pass_options());
             writer.set_debug_info(self.passopts.debug_info);
 
             if let Some(filename) = outfile_sourcemap {
@@ -192,13 +192,13 @@ impl OptimizationOptions {
     }
 
     fn run_until_convergence(&self, m: &mut Module) -> anyhow::Result<()> {
-        let mut last_size = Self::get_module_size(m)?;
+        let mut last_size = self.get_module_size(m)?;
         let mut current_size;
 
         loop {
             self.create_and_run_pass_runner(m);
 
-            current_size = Self::get_module_size(m)?;
+            current_size = self.get_module_size(m)?;
 
             if current_size >= last_size {
                 break;
@@ -210,11 +210,11 @@ impl OptimizationOptions {
         Ok(())
     }
 
-    fn get_module_size(m: &mut Module) -> anyhow::Result<usize> {
+    fn get_module_size(&self, m: &mut Module) -> anyhow::Result<usize> {
         let tempdir = tempfile::tempdir()?;
         let temp_outfile = tempdir.path().join("wasm_opt_temp_outfile.wasm");
 
-        let mut writer = ModuleWriter::new();
+        let mut writer = ModuleWriter::new(&self.translate_pass_options());
         writer.write_binary(m, &temp_outfile)?;
 
         let file_size = fs::read(&temp_outfile)?.len();

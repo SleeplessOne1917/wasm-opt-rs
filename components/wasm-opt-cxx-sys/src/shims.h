@@ -6,6 +6,7 @@
 #include "support/colors.h"
 #include "wasm-validator.h"
 #include "wasm-features.h"
+#include "source-map.h"
 
 #include <stdexcept> // runtime_error
 #include <memory> // unique_ptr
@@ -40,93 +41,6 @@ namespace wasm_shims {
     wasm::WasmValidator v;
 
     return v.validate(wasm);
-  }
-}
-
-namespace wasm_shims {
-  struct ModuleReader {
-    wasm::ModuleReader inner;
-
-    void setDebugInfo(bool debug) {
-      inner.setDebugInfo(debug);
-    }
-
-    void setDwarf(bool dwarf) {
-      inner.setDWARF(dwarf);
-    }
-
-    void readText(std::string& filename, Module& wasm) {
-      inner.readText(std::move(filename), wasm);
-    }
-
-    void readBinary(std::string& filename,
-                    Module& wasm,
-                    std::string& sourceMapFilename) {
-      inner.readBinary(std::move(filename),
-                       wasm,
-                       std::move(sourceMapFilename));
-    }
-
-    void read(std::string& filename,
-              Module& wasm,
-              std::string& sourceMapFilename) {
-      inner.read(std::move(filename),
-                 wasm,
-                 std::move(sourceMapFilename));
-    }
-  };
-
-  std::unique_ptr<ModuleReader> newModuleReader() {
-    return std::make_unique<ModuleReader>();
-  }
-}
-
-namespace wasm_shims {
-  struct ModuleWriter {
-    wasm::ModuleWriter inner;
-
-    void setDebugInfo(bool debug) {
-      inner.setDebugInfo(debug);
-    }
-
-    void setSourceMapFilename(std::string& source_map_filename) {
-      inner.setSourceMapFilename(std::move(source_map_filename));
-    }
-
-    void setSourceMapUrl(std::string& source_map_url) {
-      inner.setSourceMapUrl(std::move(source_map_url));
-    }
-  
-    void writeText(Module& wasm,
-                   std::string& filename) {
-      inner.writeText(wasm, std::move(filename));
-    }
-
-    void writeBinary(Module& wasm,
-                     std::string& filename) {
-      inner.writeBinary(wasm, std::move(filename));
-    }
-  };
-    
-  std::unique_ptr<ModuleWriter> newModuleWriter() {
-    return std::make_unique<ModuleWriter>();
-  }
-}
-
-namespace wasm_shims {
-  std::unique_ptr<std::vector<std::string>> getRegisteredNames() {
-    auto r = wasm::PassRegistry::get();
-    return std::make_unique<std::vector<std::string>>(r->getRegisteredNames());
-  }
-
-  std::unique_ptr<std::string> getPassDescription(std::string& name) {
-    auto r = wasm::PassRegistry::get();
-    return std::make_unique<std::string>(r->getPassDescription(std::move(name)));
-  }
-
-  bool isPassHidden(std::string& name) {
-    auto r = wasm::PassRegistry::get();
-    return r->isPassHidden(std::move(name));
   }
 }
 
@@ -215,6 +129,95 @@ namespace wasm_shims {
 }
 
 namespace wasm_shims {
+  struct ModuleReader {
+    wasm::ModuleReader inner;
+
+    void setDebugInfo(bool debug) {
+      inner.setDebugInfo(debug);
+    }
+
+    void setDwarf(bool dwarf) {
+      inner.setDWARF(dwarf);
+    }
+
+    void readText(std::string& filename, Module& wasm) {
+      inner.readText(std::move(filename), wasm);
+    }
+
+    void readBinary(std::string& filename,
+                    Module& wasm,
+                    std::string& sourceMapFilename) {
+      inner.readBinary(std::move(filename),
+                       wasm,
+                       std::move(sourceMapFilename));
+    }
+
+    void read(std::string& filename,
+              Module& wasm,
+              std::string& sourceMapFilename) {
+      inner.read(std::move(filename),
+                 wasm,
+                 std::move(sourceMapFilename));
+    }
+  };
+
+  std::unique_ptr<ModuleReader> newModuleReader() {
+    return std::make_unique<ModuleReader>();
+  }
+}
+
+namespace wasm_shims {
+  struct ModuleWriter {
+    wasm::ModuleWriter inner;
+
+    ModuleWriter(const PassOptions& options): inner(options.inner) {}
+
+    void setDebugInfo(bool debug) {
+      inner.setDebugInfo(debug);
+    }
+
+    void setSourceMapFilename(std::string& source_map_filename) {
+      inner.setSourceMapFilename(std::move(source_map_filename));
+    }
+
+    void setSourceMapUrl(std::string& source_map_url) {
+      inner.setSourceMapUrl(std::move(source_map_url));
+    }
+  
+    void writeText(Module& wasm,
+                   std::string& filename) {
+      inner.writeText(wasm, std::move(filename));
+    }
+
+    void writeBinary(Module& wasm,
+                     std::string& filename) {
+      inner.writeBinary(wasm, std::move(filename));
+    }
+  };
+    
+  std::unique_ptr<ModuleWriter> newModuleWriter(const PassOptions& options) {
+    return std::make_unique<ModuleWriter>(options);
+  }
+}
+
+namespace wasm_shims {
+  std::unique_ptr<std::vector<std::string>> getRegisteredNames() {
+    auto r = wasm::PassRegistry::get();
+    return std::make_unique<std::vector<std::string>>(r->getRegisteredNames());
+  }
+
+  std::unique_ptr<std::string> getPassDescription(std::string& name) {
+    auto r = wasm::PassRegistry::get();
+    return std::make_unique<std::string>(r->getPassDescription(std::move(name)));
+  }
+
+  bool isPassHidden(std::string& name) {
+    auto r = wasm::PassRegistry::get();
+    return r->isPassHidden(std::move(name));
+  }
+}
+
+namespace wasm_shims {
   struct WasmFeatureSet {
     wasm::FeatureSet inner;
 
@@ -263,6 +266,11 @@ namespace wasm_shims {
     f.push_back(wasm::FeatureSet::Feature::ExtendedConst);
     f.push_back(wasm::FeatureSet::Feature::Strings);
     f.push_back(wasm::FeatureSet::Feature::MultiMemory);
+    f.push_back(wasm::FeatureSet::Feature::TypedContinuations);
+    f.push_back(wasm::FeatureSet::Feature::SharedEverything);
+    f.push_back(wasm::FeatureSet::Feature::FP16);
+    f.push_back(wasm::FeatureSet::Feature::BulkMemoryOpt);
+    f.push_back(wasm::FeatureSet::Feature::CallIndirectOverlong);
     // This is not part of the Rust API because it has the same value as None.
     // f.push_back(wasm::FeatureSet::Feature::MVP);
     f.push_back(wasm::FeatureSet::Feature::Default);
