@@ -248,11 +248,7 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
     let fuzzing_files = fuzzing_files.iter().map(|f| fuzzing_dir.join(f));
 
     let wasm_split_dir = src_dir.join("tools/wasm-split");
-    let wasm_split_files = [
-        "instrumenter.cpp",
-        "split-options.cpp",
-        "wasm-split.cpp",
-    ];
+    let wasm_split_files = ["instrumenter.cpp", "split-options.cpp", "wasm-split.cpp"];
     let wasm_split_files = wasm_split_files.iter().map(|f| wasm_split_dir.join(f));
 
     let asmjs_dir = src_dir.join("asmjs");

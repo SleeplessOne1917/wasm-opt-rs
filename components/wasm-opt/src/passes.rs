@@ -341,7 +341,7 @@ pub enum Pass {
     /// Fixup nested pops within catches.
     CatchPopFixup,
     /// Generalize types (not yet sound).
-    ExperimentalTypeGeneralizing
+    ExperimentalTypeGeneralizing,
 }
 
 impl Pass {

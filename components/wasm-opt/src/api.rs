@@ -140,13 +140,13 @@ pub struct PassOptions {
     pub debug_info: bool,
     /// Whether to generate StackIR during binary writing. This is on by default
     /// in -O2 and above.
-    /// 
+    ///
     /// Default: `false`.
     pub generate_stack_ir: bool,
     /// Whether to optimize StackIR during binary writing. How we optimize depends
     /// on other optimization flags like optimizeLevel. This is on by default in
     /// -O2 and above.
-    /// 
+    ///
     /// Default: `false`.
     pub optimize_stack_ir: bool,
     /// Additional pass-specific arguments.

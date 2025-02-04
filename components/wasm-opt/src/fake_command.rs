@@ -30,8 +30,7 @@ impl Command {
         S: AsRef<OsStr>,
     {
         let args: Vec<_> = args.into_iter().collect();
-        self.cached_args
-            .extend(args.iter().map(OsString::from));
+        self.cached_args.extend(args.iter().map(OsString::from));
         self.inner.args(args);
         self
     }
@@ -99,19 +98,19 @@ impl Command {
 
     pub fn get_args(&self) -> CommandArgs<impl Iterator<Item = &OsStr>> {
         CommandArgs {
-            inner: self
-                .cached_args
-                .iter()
-                .map(AsRef::as_ref),
+            inner: self.cached_args.iter().map(AsRef::as_ref),
         }
     }
 }
 
 pub struct CommandArgs<'cmd, Mapping: Iterator<Item = &'cmd OsStr>> {
-    inner: Mapping
+    inner: Mapping,
 }
 
-impl<'cmd, Mapping> Iterator for CommandArgs<'cmd, Mapping> where Mapping: Iterator<Item = &'cmd OsStr> {
+impl<'cmd, Mapping> Iterator for CommandArgs<'cmd, Mapping>
+where
+    Mapping: Iterator<Item = &'cmd OsStr>,
+{
     type Item = &'cmd OsStr;
 
     fn next(&mut self) -> Option<&'cmd OsStr> {

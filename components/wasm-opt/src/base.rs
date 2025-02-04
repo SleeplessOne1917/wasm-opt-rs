@@ -84,7 +84,9 @@ pub struct ModuleWriter(cxx::UniquePtr<wasm::ModuleWriter>);
 
 impl ModuleWriter {
     pub fn new(options: &PassOptions) -> ModuleWriter {
-        ModuleWriter(wasm::newModuleWriter(options.0.as_ref().expect("PassOptions")))
+        ModuleWriter(wasm::newModuleWriter(
+            options.0.as_ref().expect("PassOptions"),
+        ))
     }
 
     pub fn set_debug_info(&mut self, debug: bool) {
