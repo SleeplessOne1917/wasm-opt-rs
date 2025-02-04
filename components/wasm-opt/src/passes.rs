@@ -97,6 +97,7 @@ pub enum Pass {
     /// Apply more specific subtypes to type fields where possible.
     TypeRefining,
     /// Replace GC allocations with locals.
+    #[strum(serialize = "heap2local")]
     Heap2Local,
     /// Optimize heap (GC) stores.
     HeapStoreOptimization,
@@ -244,8 +245,6 @@ pub enum Pass {
     ReorderFunctions,
     /// Sorts globals by access frequency.
     ReorderGlobals,
-    /// Sorts globals by access frequency (even if there are few).
-    ReorderGlobalsAlways,
     /// Sorts locals by access frequency.
     ReorderLocals,
     /// Re-optimize control flow using the relooper algorithm.
@@ -338,10 +337,6 @@ pub enum Pass {
     Untee,
     /// Removes obviously unneeded code.
     Vacuum,
-    /// Fixup nested pops within catches.
-    CatchPopFixup,
-    /// Generalize types (not yet sound).
-    ExperimentalTypeGeneralizing,
 }
 
 impl Pass {

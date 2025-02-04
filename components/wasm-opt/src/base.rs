@@ -265,6 +265,16 @@ impl PassOptions {
         this.setDebugInfo(debug_info);
     }
 
+    pub fn set_generate_stack_ir(&mut self, generate_stack_ir: bool) {
+        let this = self.0.pin_mut();
+        this.setGenerateStackIR(generate_stack_ir);
+    }
+
+    pub fn set_optimize_stack_ir(&mut self, optimize_stack_ir: bool) {
+        let this = self.0.pin_mut();
+        this.setOptimizeStackIR(optimize_stack_ir);
+    }
+
     pub fn set_arguments(&mut self, key: &str, value: &str) {
         let_cxx_string!(key = key);
         let_cxx_string!(value = value);
