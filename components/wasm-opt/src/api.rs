@@ -159,8 +159,9 @@ pub struct PassOptions {
 ///
 /// See the documentation of various [`OptimizationOptions`]
 /// constructors for a general description of how these behave.
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Default)]
 pub enum OptimizeLevel {
+    #[default]
     Level0 = 0,
     Level1 = 1,
     Level2 = 2,
@@ -174,8 +175,9 @@ pub enum OptimizeLevel {
 ///
 /// See the documentation of various [`OptimizationOptions`]
 /// constructors for a general description of how these behave.
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Default)]
 pub enum ShrinkLevel {
+    #[default]
     Level0 = 0,
     Level1 = 1,
     Level2 = 2,
@@ -202,12 +204,13 @@ pub struct Features {
 }
 
 /// The set of features to apply before applying custom features.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub enum FeatureBaseline {
     /// The default Binaryen feature set.
     ///
     /// Enables [`Feature::Default`].
     /// Disables [`Feature::None`].
+    #[default]
     Default,
     /// Only allow WebAssembly MVP features.
     ///
@@ -381,29 +384,11 @@ impl Default for PassOptions {
     }
 }
 
-impl Default for OptimizeLevel {
-    fn default() -> OptimizeLevel {
-        OptimizeLevel::Level0
-    }
-}
-
-impl Default for ShrinkLevel {
-    fn default() -> ShrinkLevel {
-        ShrinkLevel::Level0
-    }
-}
-
 impl Default for Passes {
     fn default() -> Passes {
         Passes {
             add_default_passes: true,
             more_passes: vec![],
         }
-    }
-}
-
-impl Default for FeatureBaseline {
-    fn default() -> FeatureBaseline {
-        FeatureBaseline::Default
     }
 }

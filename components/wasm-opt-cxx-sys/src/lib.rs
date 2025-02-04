@@ -181,14 +181,14 @@ pub mod wasm {
     }
 
     unsafe extern "C++" {
-        type PassRunner<'wasm>;
+        type PassRunner;
 
-        fn newPassRunner<'wasm>(wasm: Pin<&'wasm mut Module>) -> UniquePtr<PassRunner<'wasm>>;
+        fn newPassRunner(wasm: Pin<&mut Module>) -> UniquePtr<PassRunner>;
 
-        fn newPassRunnerWithOptions<'wasm>(
-            wasm: Pin<&'wasm mut Module>,
+        fn newPassRunnerWithOptions(
+            wasm: Pin<&mut Module>,
             options: UniquePtr<PassOptions>,
-        ) -> UniquePtr<PassRunner<'wasm>>;
+        ) -> UniquePtr<PassRunner>;
 
         fn add(self: Pin<&mut Self>, pass_name: Pin<&mut CxxString>);
 

@@ -262,7 +262,7 @@ impl OptimizationOptions {
 fn will_remove_debug_info(passes: &[Pass]) -> bool {
     passes
         .iter()
-        .any(|pass| PassRunner::pass_removes_debug_info(pass.into()) == true)
+        .any(|pass| PassRunner::pass_removes_debug_info(pass.into()))
 }
 
 fn convert_feature_sets(features: &Features) -> (BaseFeatureSet, BaseFeatureSet) {

@@ -36,7 +36,7 @@ fn main() -> anyhow::Result<()> {
     // include from these same dirs.
     CFG.exported_header_dirs.push(&src_dir);
     CFG.exported_header_dirs.push(&tools_dir);
-    CFG.exported_header_dirs.push(&output_dir);
+    CFG.exported_header_dirs.push(output_dir);
 
     #[cfg(feature = "dwarf")]
     {
@@ -300,7 +300,7 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
         .chain(cfg_files)
         .chain(emscripten_optimizer_files)
         .chain(parser_files)
-        .chain(Some(file_intrinsics).into_iter())
+        .chain(Some(file_intrinsics))
         .collect();
 
     Ok(src_files)

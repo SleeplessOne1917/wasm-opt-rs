@@ -54,7 +54,7 @@ impl ModuleReader {
         let path = convert_path_to_u8(path)?;
         let_cxx_string!(path = path);
 
-        let source_map_filename = source_map_filename.unwrap_or(&Path::new(""));
+        let source_map_filename = source_map_filename.unwrap_or(Path::new(""));
         let source_map_filename = convert_path_to_u8(source_map_filename)?;
         let_cxx_string!(source_map_filename = source_map_filename);
 
@@ -71,7 +71,7 @@ impl ModuleReader {
         let path = convert_path_to_u8(path)?;
         let_cxx_string!(path = path);
 
-        let source_map_filename = source_map_filename.unwrap_or(&Path::new(""));
+        let source_map_filename = source_map_filename.unwrap_or(Path::new(""));
         let source_map_filename = convert_path_to_u8(source_map_filename)?;
         let_cxx_string!(source_map_filename = source_map_filename);
 
@@ -297,7 +297,7 @@ impl FeatureSet {
     pub fn has(&self, features: &FeatureSet) -> bool {
         //let this = self.0.pin();
         //let other = features.0.pin();
-        self.0.has(&*features.0)
+        self.0.has(&features.0)
     }
 
     pub fn as_int(&self) -> u32 {
@@ -308,7 +308,7 @@ impl FeatureSet {
 pub fn get_feature_array() -> Vec<u32> {
     let f = wasm::getFeatureArray();
 
-    let feature_vec: Vec<u32> = f.iter().map(|f| *f).collect();
+    let feature_vec: Vec<u32> = f.iter().copied().collect();
 
     feature_vec
 }
@@ -350,15 +350,15 @@ pub enum Feature {
     All = (1 << 21) - 1,
 }
 
-pub struct PassRunner<'wasm>(cxx::UniquePtr<wasm::PassRunner<'wasm>>);
+pub struct PassRunner(cxx::UniquePtr<wasm::PassRunner>);
 
-impl<'wasm> PassRunner<'wasm> {
-    pub fn new(wasm: &'wasm mut Module) -> PassRunner<'wasm> {
+impl PassRunner {
+    pub fn new(wasm: &mut Module) -> PassRunner {
         let wasm = wasm.0.pin_mut();
         PassRunner(wasm::newPassRunner(wasm))
     }
 
-    pub fn new_with_options(wasm: &'wasm mut Module, options: PassOptions) -> PassRunner<'wasm> {
+    pub fn new_with_options(wasm: &mut Module, options: PassOptions) -> PassRunner {
         let wasm = wasm.0.pin_mut();
         PassRunner(wasm::newPassRunnerWithOptions(wasm, options.0))
     }

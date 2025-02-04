@@ -266,15 +266,13 @@ fn parse_command_args(command: Command) -> Result<ParsedCliArgs, Error> {
             _ => {
                 // todo parse pass names w/ pass args (--pass-name=value).
 
-                if arg.starts_with("--enable-") {
-                    let feature = &arg[9..];
+                if let Some(feature) = arg.strip_prefix("--enable-") {
                     if let Ok(feature) = Feature::from_str(feature) {
                         opts.enable_feature(feature);
                     } else {
                         unsupported.push(OsString::from(arg));
                     }
-                } else if arg.starts_with("--disable-") {
-                    let feature = &arg[10..];
+                } else if let Some(feature) = arg.strip_prefix("--disable-") {
                     if let Ok(feature) = Feature::from_str(feature) {
                         opts.disable_feature(feature);
                     } else {
@@ -313,7 +311,7 @@ fn parse_command_args(command: Command) -> Result<ParsedCliArgs, Error> {
         return Err(Error::OutputFileRequired);
     };
 
-    if unsupported.len() > 0 {
+    if !unsupported.is_empty() {
         return Err(Error::Unsupported {
             args: unsupported,
         });
