@@ -9,10 +9,10 @@ repository = "https://github.com/brson/wasm-opt-rs"
 readme = "README.md"
 
 [dependencies]
-anyhow = "1.0.95"
-cxx = "1.0.137"
+anyhow = "1.0.96"
+cxx = "1.0.142"
 wasm-opt-sys = { path = "../wasm-opt-sys", version = "0.121.0", default-features = false }
 
 [build-dependencies]
-anyhow = "1.0.95"
-cxx-build = { version = "1.0.137", features = ["parallel"] }
+anyhow = "1.0.96"
+cxx-build = { version = "1.0.142", features = ["parallel"] }

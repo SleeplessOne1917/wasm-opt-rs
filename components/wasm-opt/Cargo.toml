@@ -10,13 +10,13 @@ categories = ["wasm"]
 readme = "README.md"
 
 [dependencies]
-anyhow = "1.0.95"
-libc = "0.2.169"
+anyhow = "1.0.96"
+libc = "0.2.170"
 wasm-opt-sys = { path = "../wasm-opt-sys", version = "0.121.0", default-features = false }
 wasm-opt-cxx-sys = { path = "../wasm-opt-cxx-sys", version = "0.121.0" }
-strum = { version = "0.26.3", features = ["derive"] }
+strum = { version = "0.27.1", features = ["derive"] }
 thiserror = "2.0.11"
-tempfile = "3.16.0"
+tempfile = "3.17.1"
 
 [features]
 default = ["dwarf"]

@@ -10,12 +10,12 @@ readme = "README.md"
 links = "binaryen"
 
 [build-dependencies]
-anyhow = "1.0.95"
-cc = { version = "1.2.12", features = ["parallel"] }
-cxx-build = "1.0.137"
+anyhow = "1.0.96"
+cc = { version = "1.2.16", features = ["parallel"] }
+cxx-build = "1.0.142"
 
 [dependencies]
-cxx = "1.0.137"
+cxx = "1.0.142"
 
 [features]
 default = ["dwarf"]
