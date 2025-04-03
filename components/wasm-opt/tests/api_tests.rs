@@ -32,7 +32,7 @@ fn all_passes_correct() -> anyhow::Result<()> {
         .difference(&passes_via_enum)
         .collect::<Vec<_>>();
 
-    println!("diff: {:?}", diff);
+    println!("diff: {diff:?}");
 
     assert_eq!(passes_via_base_rs, passes_via_enum);
 

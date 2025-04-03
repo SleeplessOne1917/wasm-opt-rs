@@ -7,12 +7,12 @@ edition = "2018"
 publish = false
 
 [build-dependencies]
-anyhow = "1.0.96"
+anyhow = "1.0.97"
 
 [dev-dependencies]
-anyhow = "1.0.96"
+anyhow = "1.0.97"
 wasm-opt = { path = "../wasm-opt", version = "0.121.0", default-features = false }
-tempfile = "3.17.1"
+tempfile = "3.19.1"
 
 [features]
 default = ["dwarf"]
