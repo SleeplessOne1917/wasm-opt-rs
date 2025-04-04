@@ -309,6 +309,12 @@ namespace wasm_shims {
       inner.add(std::move(passName));
     }
 
+    // TODO: Remove this binding and add an std::optional argument to add once CXX supports it.
+    // See this GitHub issue for info: https://github.com/dtolnay/cxx/issues/87
+    void addWithArgument(std::string& passName, std::string& passArg) {
+      inner.add(std::move(passName), std::move(passArg));
+    }
+
     void addDefaultOptimizationPasses() {
       inner.addDefaultOptimizationPasses();
     }

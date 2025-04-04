@@ -183,13 +183,34 @@ pub enum ShrinkLevel {
     Level2 = 2,
 }
 
+#[derive(Clone, Debug)]
+pub enum PassArg {
+    Name(Pass),
+    Arg(Pass, String),
+}
+
+impl PassArg {
+    pub fn name(&self) -> &Pass {
+        match self {
+            Self::Name(name) => name,
+            Self::Arg(name, _) => name,
+        }
+    }
+}
+
+impl From<Pass> for PassArg {
+    fn from(pass: Pass) -> Self {
+        Self::Name(pass)
+    }
+}
+
 /// The set of optimization passes to apply.
 #[derive(Clone, Debug)]
 pub struct Passes {
     /// Apply the default set of optimization passes.
     pub add_default_passes: bool,
     /// Additional passes to apply.
-    pub more_passes: Vec<Pass>,
+    pub more_passes: Vec<PassArg>,
 }
 
 /// Which wasm [`Feature`]s to enable and disable.

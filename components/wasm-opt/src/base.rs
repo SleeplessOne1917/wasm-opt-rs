@@ -355,7 +355,7 @@ pub enum Feature {
     CallIndirectOverlong = 1 << 20,
     // MVP has the same value as None.
     // Mvp = 0,
-    Default = 1 << 5 | 1 << 1, // SignExt | MutableGlobals,
+    Default = (1 << 5) | (1 << 1), // SignExt | MutableGlobals,
     // GCNNLocals are opt-in: merely asking for "All" does not apply them. To
     // get all possible values use AllPossible. See setAll() below for more
     // details.
@@ -380,6 +380,14 @@ impl PassRunner {
 
         let this = self.0.pin_mut();
         this.add(pass_name);
+    }
+
+    pub fn add_with_argument(&mut self, pass_name: &str, pass_arg: &str) {
+        let_cxx_string!(pass_name = pass_name);
+        let_cxx_string!(pass_arg = pass_arg);
+
+        let this = self.0.pin_mut();
+        this.addWithArgument(pass_name, pass_arg);
     }
 
     pub fn add_default_optimization_passes(&mut self) {

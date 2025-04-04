@@ -12,6 +12,7 @@
 use crate::api::{Feature, FileType, OptimizationOptions, OptimizeLevel, Pass, ShrinkLevel};
 use crate::profiles::Profile;
 use crate::run::OptimizationError;
+use crate::PassArg;
 use std::ffi::{OsStr, OsString};
 use std::iter::Iterator;
 use std::num::ParseIntError;
@@ -264,37 +265,22 @@ fn parse_command_args(command: Command) -> Result<ParsedCliArgs, Error> {
             /* fallthrough */
 
             _ => {
-                // todo parse pass names w/ pass args (--pass-name=value).
-
-                if let Some(feature) = arg.strip_prefix("--enable-") {
-                    if let Ok(feature) = Feature::from_str(feature) {
+                if let Some(feature) = parse_feature(arg, "--enable-") {
                         opts.enable_feature(feature);
-                    } else {
-                        unsupported.push(OsString::from(arg));
-                    }
-                } else if let Some(feature) = arg.strip_prefix("--disable-") {
-                    if let Ok(feature) = Feature::from_str(feature) {
+                } else if let Some(feature) = parse_feature(arg, "--disable-") {
                         opts.disable_feature(feature);
+                } else if let Some((arg_name, arg_value)) = arg.split_once('='){
+                    if let Some(pass) =  Pass::iter().find(|pass| is_pass_argument(arg_name, &pass)) {
+                        opts.add_pass(PassArg::Arg(pass, arg_value.to_owned()));
                     } else {
-                        unsupported.push(OsString::from(arg));
+                        // TODO: Not sure what to do in this case
                     }
+                } else if let Some(pass) = Pass::iter().find(|pass| is_pass_argument(arg, &pass)) {
+                    opts.add_pass(pass);
+                } else if arg.starts_with('-') && arg.len() > 1 {
+                    unsupported.push(OsString::from(arg));
                 } else {
-                    let mut is_pass = false;
-                    for pass in Pass::iter() {
-                        if is_pass_argument(arg, &pass) {
-                            opts.add_pass(pass);
-                            is_pass = true;
-                        }
-                    }
-
-                    if !is_pass {
-                        if arg.starts_with("-") && arg.len() > 1 {
-                            // Reject args that look like flags that we don't support.
-                            unsupported.push(OsString::from(arg));
-                        } else {
-                            parse_infile_path(OsStr::new(arg), &mut input_file, &mut unsupported);
-                        }
-                    }
+                    parse_infile_path(OsStr::new(arg), &mut input_file, &mut unsupported);
                 }
             }
         }
@@ -379,4 +365,11 @@ fn parse_u32<'item>(args: &mut impl Iterator<Item = &'item OsStr>) -> Result<u32
         source: e,
     })?;
     Ok(number)
+}
+
+fn parse_feature(arg: &str, prefix: &str) -> Option<Feature> {
+    arg.strip_prefix(prefix)
+        .map(Feature::from_str)
+        .map(Result::ok)
+        .flatten()
 }

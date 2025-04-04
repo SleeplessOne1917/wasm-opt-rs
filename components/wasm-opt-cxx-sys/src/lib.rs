@@ -192,6 +192,12 @@ pub mod wasm {
 
         fn add(self: Pin<&mut Self>, pass_name: Pin<&mut CxxString>);
 
+        fn addWithArgument(
+            self: Pin<&mut Self>,
+            pass_name: Pin<&mut CxxString>,
+            pass_arg: Pin<&mut CxxString>,
+        );
+
         fn addDefaultOptimizationPasses(self: Pin<&mut Self>);
 
         fn run(self: Pin<&mut Self>);
