@@ -10,8 +10,8 @@ categories = ["wasm"]
 readme = "README.md"
 
 [dependencies]
-anyhow = "1.0.97"
-libc = "0.2.171"
+anyhow = "1.0.98"
+libc = "0.2.172"
 wasm-opt-sys = { path = "../wasm-opt-sys", version = "0.121.0", default-features = false }
 wasm-opt-cxx-sys = { path = "../wasm-opt-cxx-sys", version = "0.121.0" }
 strum = { version = "0.27.1", features = ["derive"] }
