@@ -1,8 +1,11 @@
 use cxx_build::CFG;
-use std::fmt::Write as FmtWrite;
-use std::fs::{self, File};
-use std::io::{BufRead, BufReader, BufWriter, Write};
-use std::path::{Path, PathBuf};
+use std::{
+    fmt::Write as FmtWrite,
+    fs::{self, File},
+    io::{BufRead, BufReader, BufWriter, Write},
+    iter::once,
+    path::{Path, PathBuf},
+};
 
 fn main() -> anyhow::Result<()> {
     check_cxx17_support()?;
@@ -38,14 +41,14 @@ fn main() -> anyhow::Result<()> {
     CFG.exported_header_dirs.push(&tools_dir);
     CFG.exported_header_dirs.push(output_dir);
 
+    let fp16_dir = binaryen_dir.join("third_party/FP16/include");
+    CFG.exported_header_dirs.push(&fp16_dir);
+
     #[cfg(feature = "dwarf")]
     {
         let llvm_include = llvm_dir.join("include");
         CFG.exported_header_dirs.push(&llvm_include);
     }
-
-    let fp16_dir = binaryen_dir.join("third_party/FP16/include");
-    CFG.exported_header_dirs.push(&fp16_dir);
 
     let mut builder = cxx_build::bridge("src/lib.rs");
 
@@ -176,7 +179,6 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
 
     let support_dir = src_dir.join("support");
     let support_files = [
-        "archive.cpp",
         "bits.cpp",
         "colors.cpp",
         "command-line.cpp",
@@ -184,7 +186,6 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
         "dfa_minimization.cpp",
         "file.cpp",
         "istring.cpp",
-        "json.cpp",
         "name.cpp",
         "path.cpp",
         "safe_integer.cpp",
@@ -200,17 +201,14 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
     let ir_files = [
         "debuginfo.cpp",
         "drop.cpp",
-        "effects.cpp",
         "eh-utils.cpp",
         "export-utils.cpp",
         "ExpressionAnalyzer.cpp",
         "ExpressionManipulator.cpp",
-        "intrinsics.cpp",
         "LocalGraph.cpp",
         "LocalStructuralDominance.cpp",
         "lubs.cpp",
         "memory-utils.cpp",
-        "module-splitting.cpp",
         "module-utils.cpp",
         "names.cpp",
         "possible-contents.cpp",
@@ -226,30 +224,9 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
     let passes_dir = src_dir.join("passes");
     let passes_files = get_files_from_dir(&passes_dir)?;
 
-    let tools_dir = src_dir.join("tools");
-    let tools_files = [
-        "wasm-as.cpp",
-        "wasm-ctor-eval.cpp",
-        "wasm-dis.cpp",
-        "wasm-emscripten-finalize.cpp",
-        "wasm-fuzz-lattices.cpp",
-        "wasm-fuzz-types.cpp",
-        "wasm-merge.cpp",
-        "wasm-metadce.cpp",
-        "wasm-opt.cpp",
-        "wasm-reduce.cpp",
-        "wasm-shell.cpp",
-        "wasm2js.cpp",
-    ];
-    let tools_files = tools_files.iter().map(|f| tools_dir.join(f));
-
     let fuzzing_dir = src_dir.join("tools/fuzzing");
     let fuzzing_files = ["fuzzing.cpp", "heap-types.cpp", "random.cpp"];
     let fuzzing_files = fuzzing_files.iter().map(|f| fuzzing_dir.join(f));
-
-    let wasm_split_dir = src_dir.join("tools/wasm-split");
-    let wasm_split_files = ["instrumenter.cpp", "split-options.cpp", "wasm-split.cpp"];
-    let wasm_split_files = wasm_split_files.iter().map(|f| wasm_split_dir.join(f));
 
     let asmjs_dir = src_dir.join("asmjs");
     let asmjs_files = ["asm_v_wasm.cpp", "asmangle.cpp", "shared-constants.cpp"];
@@ -258,12 +235,6 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
     let cfg_dir = src_dir.join("cfg");
     let cfg_files = ["Relooper.cpp"];
     let cfg_files = cfg_files.iter().map(|f| cfg_dir.join(f));
-
-    let emscripten_optimizer_dir = src_dir.join("emscripten-optimizer");
-    let emscripten_optimizer_files = ["optimizer-shared.cpp", "parser.cpp", "simple_ast.cpp"];
-    let emscripten_optimizer_files = emscripten_optimizer_files
-        .iter()
-        .map(|f| emscripten_optimizer_dir.join(f));
 
     let parser_dir = src_dir.join("parser");
     let parser_files = [
@@ -275,7 +246,6 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
         "parse-3-implicit-types.cpp",
         "parse-4-module-types.cpp",
         "parse-5-defs.cpp",
-        "wast-parser.cpp",
         "wat-parser.cpp",
     ];
     let parser_files = parser_files.iter().map(|f| parser_dir.join(f));
@@ -289,14 +259,11 @@ fn get_src_files(src_dir: &Path) -> anyhow::Result<Vec<PathBuf>> {
         .chain(support_files)
         .chain(ir_files)
         .chain(passes_files)
-        .chain(tools_files)
         .chain(fuzzing_files)
-        .chain(wasm_split_files)
         .chain(asmjs_files)
         .chain(cfg_files)
-        .chain(emscripten_optimizer_files)
         .chain(parser_files)
-        .chain(Some(file_intrinsics))
+        .chain(once(file_intrinsics))
         .collect();
 
     Ok(src_files)
